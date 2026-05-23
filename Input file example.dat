@@ -1,0 +1,219 @@
+###########################
+### INPUT FOR COMBOCODE ###
+###########################
+###################
+# GENERAL INPUT
+###################
+#-- Which codes to run
+CHEMISTRY=1                         	# Perform chemical kinetics modelling
+
+#-- Output folder management
+PATH_CHEMISTRY = OutputNov2021-MPhys-param-test-dust-gas   # The output will be written to kb.path.chemistry/PATH_CHEMISTRY
+SRC_CHEMISTRY        = src-includeDust-completeSurfaceChemistry-VR-adjustEbind    # The model used is located in kb.path.chemistry/SRC_CHEMISTRY
+
+#-- Various settings for this CC session
+REPLACE_DB_ENTRY=0                  	# Be very careful with putting this keyword to 1! If a model in a database is found (usually cooling or mcmax), it is replaced by a newly calculated model (also with a new model_id). Any mline, sphinx or pacs models stemming from the same cooling id will also be deleted!!!! Now works with grids as well: Any new calculated model in the grid will NOT be deleted. (hence, if an MCMax model is the same for all models in the grid, it will not be calculated anew every single time)
+SINGLE_SESSION = 0                    # Be very careful with putting this keyword to 1! Only useful when running large grid of models (open the database once, instead of opening and closing it for each model)
+
+
+####################
+# Stellar parameters
+####################
+
+STAR_NAME = cwleo      # Stellar Name (remnant of ComboCode, keep cwleo)
+R_STAR = 5e13          # cm. Stellar radius
+
+
+#####################
+# Physical parameters
+#####################
+
+#-- GAS TEMPERATURE PROFILE
+TEMPMODE = EPSILON
+R_EPSIL = 5e13          # cm. This is almost always equal to R_STAR
+T_STAR = 2000.0         # K
+EPSILON_TEMP_LAW = 0.7  # exponent gas temperature power-law profile
+
+
+#-- DENSITY PROFILE
+MLOSS    = 1e-5     # Msun/yr, mass-loss rate
+VELOCITY = 15e5     # cm/s, outflow velocity
+
+
+
+#################
+# Dust parameters
+#################
+
+VDRIFT   = 10e5:15e5      # cm/s, drift velocity between dust and gas. Not needed for gas-phase chemistry only
+
+#-- GRAIN PARAMETERS FOR H2 FORMATION AND CR IONISATION
+#-- Don't change these
+A_G = 1.0E-5    # cm, average grain size
+X_G = 1.5e-12   # cm-3, grain number density
+ALBEDO = 0.5    # dust albedo
+ZETA = 1        # factor cosmic ray photo-rate
+GAMCO = 3       # CO extinction coefficient
+AUV_AV = 4.65   # ratio of UV over V visual extinction
+
+
+#-- GRAIN-SIZE DISTRIBUTION (GSD)
+IGRAINSIZEDIST    = 1       # use a grain size distribution. standard parameters = MRN distribution (Matthis et al. 1977). This overrides A_G, X_G
+ISCALEAUV         = 1       # scale the UV extinction to the dust-to-gas ratio
+AMIN              = 50E-8   # cm, minimum grain size in GSD
+AMAX              = 0.25E-4 # cm, maximum grain size in GSD
+GRAINEXP          = -3.5    # exponent of GSD
+RHODUST           = 3.5    # g/cm3, 2.24 for carbonaceous dust, 3.5 for silicate dust
+DTG               = 2e-3    # dust to gas ratio
+
+
+#-- DUST TEMPERATURE PROFILE
+T_DUST = 500       # K
+S_DUST = 1.7        # exponent dust temperature power-law profile
+
+
+
+#-- DUST-GAS CHEMISTRY PARAMETERS
+#-- Don't change these
+NS                      = 1e15  # cm-2, surface density of binding sites on the dust
+NU                      = 1E12  # cm-1, attempt frequency of the ice to escape off the surface
+NACT                    = 2     # number of active monolayers
+EDIFF_EBIND             = 0.4   # ratio between diffusion barrier and binding energy
+INCREASEBIND  = 0.0   # increase in binding energy (use 0)
+
+
+#-- DUST-GAS AND GRAIN-SURFACE CHEMISTRY
+#-- These should all be on if you include dust-gas chemistry, all off for only gas-phase chemistry
+IDGCHEM                 = 1     # run dust-gas interactions (accretion, desorption)
+ILH                     = 1     # run grain-surface chemistry: Langmuir-Hinshelwood
+IER                     = 1     # run grain-surface chemistry: Eley-Rideal
+IGRAINPHOTON  = 1     # include grain-surface photodissociation
+RATEVR        = 0   # photoprocessing rate. if zero, photoprocessing is not included
+BRANCH        = 1E-2  # reactive desorption efficiency (use 0.01)
+
+#-- SPUTTERING
+#- This should be turned on when including dust-gas chemistry. Use prescription of Tielens + sputtering factor of two
+ISPUTTERINGTIELENS = 1
+ISPUTTERINGWOITKE = 0     # don't use this one
+SPUTFACTORTWO = 1
+SPUTCO            = 1     # enable sputtering by CO
+SPUTN2            = 1     # enable sputtering by N2
+
+
+
+
+
+################
+# Modelling info
+################
+
+#-- RADIUS INFORMATION
+R_INNER_CHEM            = 1e15  # cm, starting radius chemical model
+R_OUTER_CHEM            = 1e18  # cm, end radius chemical model
+RESOLUTION     = 0.03           # determines the step size
+
+
+#-- DVODE
+RTOL = 1.0E-5             # relative tolerance of the ODE solver
+ATOL = 1.0E-20            # absolute tolerance of the ODE solver
+IOUTPUTDVODE       = 0    # make dvode give some extra output about solving the ODES
+
+
+
+
+
+###################
+# Outflow structure
+###################
+
+#-- CLUMPING PARAMETERS
+#- SMOOTH = spherically symmetric outflow, POROSITY = porous outflow
+CLUMPMODE           = SMOOTH
+FIC                 = 0
+FVOL                = 0
+L                   = 0
+
+#####################
+# Internal UV photons
+#####################
+
+#-- INTERNAL PHOTONS
+IINNER = 0        #- Turn on the effect of stellar UV photons (requires special rates file)
+RSCALE = 50       #- fiducial radius of photon flux
+RDUST = 1.9       #- location dust (cw leo specific) for dust extinction internal UV photons
+
+
+
+
+####################
+# Input
+####################
+
+#-- RATES, SPECIES, BINDING ENERGIES
+REACTIONS_FILE           = rate12_v3_toUMIST_SP_VR_complex_corrPH.rates               # located in path.csource/rates
+SPECIES_FILE             = rate12_v3_toUMIST_SP_VR_complex_corrPH_Orich_paperI.specs  # located in path.csource/species
+BINDING_FILE               = binding/binding_energies_update_catherine_namescatherine.txt   # located in path.csource/binding
+
+
+#-- SHIELDING FUNCTIONS CO AND N2
+#-- These aren't used (yet) but need to be given
+FILECO                  = co/shield.03.5.69-557-36.dat                                # located in path.csource
+FILEN2                  = n2/Tex_10K_bH2_3km.s-1_bH_5km.s-1_NH_1e+20cm-2.dat          # located in path.csource
+
+
+####################
+# Analyse output
+####################
+
+#-- ANALYSE SUBROUTINE
+PERFORM_ROUTINE             = 0
+ROUTINE_RADIUS              = 1e15  # perform analyse routine at this radius
+FULL_ANALYSIS               = 0     # perform it at all radii
+SENSITIVITY                 = 0.01  # smallest change that should be included
+
+
+
+###################
+# PLOTTING INPUT
+###################
+#-- The following plot input is not required to run. Only include those that you need, if you want to plot something.
+#   Any plot method can be activated by putting PLOT_GAS/DUST_[METHOD] to 1.
+#   Customisation of the plot can be done by giving the cfg file for Plottin2.plotCols() to the CFG_GAS/DUST_[METHOD] parameter
+#-- Plot input: Chemistry
+
+PLOT_CHEMISTRY_ABUNDANCE_PROFILES=0
+CFG_CHEMISTRY_ABUNDANCE_PROFILES=/lhome/mariev/Projects/cfg/plot_abundances_ices.cfg
+
+PLOT_CHEMISTRY_MONO_LAYERS=0
+
+PLOT_CHEMISTRY_ABUNDANCE_PROFILES_RESOLUTION=
+CFG_CHEMISTRY_ABUNDANCE_PROFILES_RESOLUTION=/lhome/mariev/Dropbox/Projects/cfg/plot_abundances_cwleo_res.cfg
+
+
+PLOT_CHEMISTRY_ABUNDANCE_PROFILES_COMPONENTS=0
+CFG_CHEMISTRY_ABUNDANCE_PROFILES_COMPONENTS=/lhome/mariev/Dropbox/Projects/cfg/plot_abundances.cfg
+
+PLOT_CHEMISTRY_RADIATION_FIELD=
+CFG_CHEMISTRY_RADIATION_FIELD=/lhome/mariev/Dropbox/Projects/cfg/plot_radfield.cfg
+
+PLOT_CHEMISTRY_VISUAL_EXTINCTION=
+CFG_CHEMISTRY_VISUAL_EXTINCTION=#/lhome/mariev/Dropbox/Projects/cfg/plot_av_frame.cfg
+
+PLOT_CHEMISTRY_PHOTODISSOCIATIONRATE_CO=
+CFG_CHEMISTRY_PHOTODISSOCIATIONRATE_CO=/home/mariev/Dropbox/Projects/cfg/plot_H_frame.cfg
+
+PLOT_CHEMISTRY_FULL_ANALYSIS=
+CFG_CHEMISTRY_FULL_ANALYSIS=/lhome/mariev/Dropbox/Projects/cfg/plot_fullanalysis.cfg
+
+PLOT_CHEMISTRY_DESTRUCTION_RATES=0
+CFG_CHEMISTRY_DESTRUCTION_RATES=/home/mariev/Dropbox/Projects/cfg/plot_destructionrates.cfg
+
+PLOT_CHEMISTRY_PRODUCTION_RATES=0
+CFG_CHEMISTRY_PRODUCTION_RATES=/home/mariev/Dropbox/cfg/plot_destructionrates.cfg
+
+PLOT_CHEMISTRY_NETTO_RATES=
+CFG_CHEMISTRY_NETTO_RATES=/lhome/mariev/Dropbox/Projects/cfg/plot_destructionrates.cfg
+
+
+PLOT_CHEMISTRY_TEMP=
+CFG_CHEMISTRY_FULL_ANALYSIS_PLOTTING2=/Users/Marie/Projects/rdor/cfg/plot_fullanalysis.cfg
